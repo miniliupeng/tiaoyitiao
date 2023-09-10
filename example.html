@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>跳一跳</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="https://www.unpkg.com/three@0.154.0/build/three.js"></script>
+</head>
+<body>
+<script>
+const width = window.innerWidth;
+const height = window.innerHeight;
+const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+
+const scene = new THREE.Scene();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+
+renderer.setSize(width, height);
+renderer.setClearColor(0x333333);
+
+camera.position.set(100, 100, 100);
+camera.lookAt(scene.position);
+
+const directionalLight = new THREE.DirectionalLight( 0xffffff );
+directionalLight.position.set(40, 100, 60);
+
+scene.add( directionalLight );
+
+document.body.appendChild(renderer.domElement)
+
+const axesHelper = new THREE.AxesHelper( 1000 );
+axesHelper.position.set(0,0,0);
+scene.add( axesHelper );
+
+const targetCameraPos = { x: 100, y: 100, z: 100 };
+
+const cameraFocus = { x: 0, y: 0, z: 0 };
+const targetCameraFocus = { x: 0, y: 0, z: 0 };
+
+const playerPos = { x: 0, y: 17.5, z: 0};
+const targetPlayerPos = { x: 0, y: 17.5, z: 0};
+
+let player;
+let speed = 0;
+
+function create() {
+
+    function createCube(x, z) {
+        const geometry = new THREE.BoxGeometry( 30, 20, 30 );
+        const material = new THREE.MeshPhongMaterial( {color: 0xffffff} );
+        const cube = new THREE.Mesh( geometry, material ); 
+        cube.position.x = x;
+        cube.position.z = z;
+        scene.add( cube );
+    }
+
+    function createPlayer() {
+        const geometry = new THREE.BoxGeometry( 5, 15, 5 );
+        const material = new THREE.MeshPhongMaterial( {color: 0x000000} );
+        const player = new THREE.Mesh( geometry, material ); 
+        player.position.x = 0;
+        player.position.y = 17.5;
+        player.position.z = 0;
+        scene.add( player )
+        return player;
+    }
+
+    player = createPlayer();
+
+    createCube(0, 0);
+    createCube(0, -100);
+    createCube(0, -200);
+    createCube(0, -300);
+    createCube(-100, 0);
+    createCube(-200, 0);
+    createCube(-300, 0);
+
+    document.body.addEventListener('click', () => {
+        targetCameraPos.z = camera.position.z - 100
+
+        targetCameraFocus.z -= 100
+        
+        targetPlayerPos.z -=100;
+        speed = 5;
+    });
+}
+
+function moveCamera() {
+    const { x, z } = camera.position;
+    if(x > targetCameraPos.x) {
+        camera.position.x -= 3;
+    }
+    if(z > targetCameraPos.z) {
+        camera.position.z -= 3;
+    }
+
+    if(cameraFocus.x > targetCameraFocus.x) {
+        cameraFocus.x -= 3;
+    }
+    if(cameraFocus.z > targetCameraFocus.z) {
+        cameraFocus.z -= 3;
+    }
+
+    camera.lookAt(cameraFocus.x, cameraFocus.y, cameraFocus.z);  
+}
+
+function movePlayer() {
+    if(player.position.x > targetPlayerPos.x) {
+        player.position.x -= 3;
+    }
+    if(player.position.z > targetPlayerPos.z) {
+        player.position.z -= 3;
+    }
+    player.position.y += speed;
+    speed -= 0.3;
+    if(player.position.y < 17.5) {
+        player.position.y = 17.5;
+    }
+}
+
+function render() {
+    moveCamera();
+    movePlayer();
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(render);
+}
+
+create();
+render();
+</script>
+</body>
+</html>
+

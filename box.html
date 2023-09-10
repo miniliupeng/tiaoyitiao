@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>立方体</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+    </style>
+    <script src="https://www.unpkg.com/three@0.154.0/build/three.js"></script>
+  </head>
+  <body>
+    <script>
+      // 创建照相机
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000); // PerspectiveCamera 透视相机(近大远小效果)  参数：fov(视野角度) aspect(看的这个范围的宽高比) near（近裁剪面） far（远裁剪面）
+      camera.position.set(500, 500, 500); //设置相机位置， 相机在三维空间中的坐标为x=0、y=0、z=500
+
+      // 创建场景
+      const scene = new THREE.Scene();
+      camera.lookAt(scene.position); //设置相机的朝向，使其朝向场景的位置
+
+      // 创建 渲染器
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(width, height);
+      document.body.append(renderer.domElement);
+
+      // 创建光源
+      const pointLight = new THREE.PointLight(0xffffff); // 白色的点光源
+      pointLight.position.set(0, 500, 500); //设置光源位置
+      scene.add(pointLight); // 添加到场景
+
+      // 坐标轴 向右为 x，向上为 y，向前为 z。
+      const axesHelper = new THREE.AxesHelper(1000); // 长度指定 1000
+      axesHelper.position.set(0, 0, 0);
+      scene.add(axesHelper);
+
+      // 创建立方体
+      function create() {
+        const geometry = new THREE.BoxGeometry(100, 100, 100); // 创建立方体的几何体 指定宽度、高度和深度
+        // MeshPhongMaterial 反光材质
+        // MeshBasicMaterial 均匀的颜色，不受光照影
+        const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 }); // 创建了一个材质（material），使用了Phong着色模型，并设置了颜色为0x00ff00（绿色）
+        const cube = new THREE.Mesh(geometry, material); // 使用几何体和材质创建了一个网格（mesh）
+        // 设置了立方体的旋转角度， 旋转角度的单位是弧度（radians），而不是度数（degrees）
+        // 一个完整的圆的弧长是2π（约等于6.28），所以一个完整的圆的角度是2π弧度。
+        // 弧度 = 角度 (π / 180)
+        // 相机从 0 0 500 移到 500 500 500 ，物体不用旋转了
+        // cube.rotation.y = 0.5; // 绕Y轴
+        // cube.rotation.x = 0.5; // 绕X轴
+        scene.add(cube); // 将立方体添加到场景
+      }
+
+      function render() {
+        renderer.render(scene, camera);
+        requestAnimationFrame(render); // 一帧帧的渲染
+      }
+
+      create();
+      render();
+    </script>
+  </body>
+</html>
