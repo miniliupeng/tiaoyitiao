@@ -49,6 +49,7 @@
       let player;
 
       // 创建照相机
+      // 正交相机(平行投影，大小不变) OrthographicCamera
       const width = window.innerWidth;
       const height = window.innerHeight;
       const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000); // PerspectiveCamera 透视相机(近大远小效果)  参数：fov(视野角度) aspect(看的这个范围的宽高比) near（近裁剪面） far（远裁剪面）
@@ -68,6 +69,8 @@
       // 创建光源
       // 点光源 PointLight 每个物体的反光不同
       // 平行光 DirectionalLight 每个物体的反光一样
+      // 环境光： 均匀照射每个地方
+      // 聚光灯： 舞台聚光灯的光源
       const pointLight = new THREE.DirectionalLight(0xffffff); // 白色的点光源
       // 光照射到的部分越多，颜色越浅，照射到的越少，颜色越深。
       // 我们希望上面的面（y 轴）照射到的多一些，前面那个面（z 轴）其次，右边那个面（x 轴）最深。
@@ -82,6 +85,13 @@
 
       const currentCubePos = { x: 0, y: 0, z: 0 };
       let direction = "right";
+
+      // 物体
+      // 永远面向相机的平面是 Sprite
+      // 由三角形构成的物体叫做 Mesh 要指定几何体Geometry 和材质 Material
+      // 圆柱几何体 CylinderBufferGeometry
+      // MeshBasicMaterial 是基础的材质
+      // TextGeometry 文字 需要从一个 用字体文件 ttf 来转换得到 xxx.typeface.json 中加载; http://gero3.github.io/facetype.js/
       // 创建立方体
       function createCube(x, z) {
         const geometry = new THREE.BoxGeometry(30, 20, 30); // 创建立方体的几何体 指定宽度、高度和深度
